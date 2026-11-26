@@ -51,6 +51,26 @@
   .wa{display:inline-block;margin-top:6px;color:var(--navy);font-weight:700}
   .loading{text-align:center;padding:30px;color:var(--mut)}
   footer{text-align:center;font-size:14px;color:var(--mut);padding:0 14px 30px}
+  .ov{position:fixed;inset:0;background:rgba(14,24,48,.55);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow:auto;z-index:10}
+  .ov[hidden]{display:none}
+  .dlg{background:#fff;border-radius:20px;max-width:520px;width:100%;padding:18px 20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.25);margin:auto 0}
+  .dlg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .x{font:inherit;font-size:16px;background:none;border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--navy)}
+  .pick{display:flex;align-items:center;gap:12px;background:#fff8e6;border:2px solid var(--gold2);border-radius:14px;padding:10px 12px;margin:6px 0 12px}
+  .pick img{width:56px;height:56px;border-radius:50%;object-fit:cover}
+  .pick b{font-size:20px;color:var(--navy)}
+  .dlg h2{font-size:21px;margin:4px 0 12px;color:var(--navy)}
+  .dlg label{display:block;font-weight:500;margin-bottom:12px;font-size:17px}
+  .dlg input{display:block;width:100%;margin-top:5px;font:inherit;font-size:18px;padding:11px 12px;border:2px solid var(--line);border-radius:12px;background:#fbfcfe}
+  .dlg input:focus{outline:none;border-color:var(--gold)}
+  .dlg input[dir=ltr]{text-align:right}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{color:var(--mut);font-weight:400;font-size:15px}
+  .err{color:#b00020;font-weight:700;min-height:1em;margin:4px 0}
+  .cta{display:block;width:100%;font:inherit;font-size:21px;font-weight:800;color:#fff;background:var(--gold);border:0;border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 6px 18px rgba(212,167,60,.35)}
+  .cta:hover{filter:brightness(1.05)}
+  .hint{font-size:15px;color:var(--mut);text-align:center;margin:12px 0 0}
+  @media (max-width:420px){.row2{grid-template-columns:1fr;gap:0}}
 </style>
 </head>
 <body>
@@ -62,7 +82,7 @@
 
   <main class="wrap">
     <div class="card">
-      <div class="steps"><span><b>1.</b> בוחרים יום ושעה</span><span>←</span><span><b>2.</b> ממלאים פרטים</span><span>←</span><span><b>3.</b> מקבלים אישור במייל</span></div>
+      <div class="steps"><span><b>1.</b> בוחרים יום ושעה</span><span>←</span><span><b>2.</b> ממלאים פרטים</span><span>←</span><span><b>3.</b> מאשרים ומקבלים מייל</span></div>
       <p class="filter-title">עם מי תרצו להיפגש?</p>
       <div class="chips" id="chips"></div>
       <div id="list"><div class="loading">טוען את המועדים הפנויים...</div></div>
@@ -70,6 +90,30 @@
     </div>
   </main>
   <footer>© אבירם היכל - העוצמה בחינוך · כל השעות לפי שעון ישראל</footer>
+
+  <div class="ov" id="ov" hidden>
+    <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+      <div class="dlg-top">
+        <button class="x" type="button" id="dlgBack">→ חזרה לבחירת מועד</button>
+        <button class="x" type="button" id="dlgClose" aria-label="סגירה">✕</button>
+      </div>
+      <div class="pick" id="pick"></div>
+      <h2 id="dlgTitle">כמה פרטים, ואנחנו שומרים לכם את המקום</h2>
+      <form id="f" novalidate>
+        <div class="row2">
+          <label>שם פרטי של ההורה<input name="first" autocomplete="given-name" required></label>
+          <label>שם משפחה<input name="last" autocomplete="family-name" required></label>
+        </div>
+        <label>מייל<input name="email" type="email" inputmode="email" autocomplete="email" dir="ltr" required></label>
+        <label>טלפון נייד<input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="050-0000000" required></label>
+        <label>שם הילד/ה<input name="kid" required></label>
+        <label>שם ההורה השני <span class="opt">(לא חובה)</span><input name="p2"></label>
+        <p class="err" id="err" aria-live="polite"></p>
+        <button class="cta" type="submit">שמירת הפגישה ←</button>
+        <p class="hint">במסך הבא כל הפרטים כבר ממולאים.<br>נשאר רק ללחוץ למטה על הכפתור הכחול <b dir="ltr">Schedule Event</b> (= אישור הפגישה).</p>
+      </form>
+    </div>
+  </div>
 
 <script>
 const FALLBACK = {
@@ -131,7 +175,7 @@ function render(){
     h += `<section class="day"><h2>${esc(d.label)}</h2><div class="slots">`;
     d.items.sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0).forEach(s=>{
       const r = reg(s.r), p = ilParts(s.t);
-      h += `<a class="slot" href="${esc(bookUrl(r,s.t))}"><img src="${esc(r.img)}" alt=""><span><span class="t">${p.time}</span><br><span class="n">עם ${esc(r.name)}</span></span><span class="go">←</span></a>`;
+      h += `<a class="slot" href="${esc(bookUrl(r,s.t))}" data-r="${esc(s.r)}" data-t="${esc(s.t)}"><img src="${esc(r.img)}" alt=""><span><span class="t">${p.time}</span><br><span class="n">עם ${esc(r.name)}</span></span><span class="go">←</span></a>`;
     });
     h += `</div></section>`;
   });
@@ -139,6 +183,59 @@ function render(){
   list.innerHTML = h;
   const m = document.getElementById("more"); if (m) m.onclick = ()=>{showAll=true; render();};
 }
+
+/* ---- מסך 2: פרטים בעברית, ומשם לקלנדלי עם הכל ממולא ---- */
+const ov = document.getElementById("ov"), form = document.getElementById("f"), errEl = document.getElementById("err");
+let chosen = null, lastFocus = null;
+const SAVE_KEY = "mivdak-form";
+function openForm(rid, iso){
+  const r = reg(rid); if (!r) return;
+  chosen = {r, iso};
+  const p = ilParts(iso);
+  document.getElementById("pick").innerHTML = `<img src="${esc(r.img)}" alt=""><span><b>${esc(p.label)} · ${p.time}</b><br>פגישת מבדק עם ${esc(r.name)}</span>`;
+  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}"); for (const k in s) if (form.elements[k] && !form.elements[k].value) form.elements[k].value = s[k]; } catch(e){}
+  errEl.textContent = "";
+  lastFocus = document.activeElement;
+  ov.hidden = false; document.body.style.overflow = "hidden";
+  history.pushState({dlg:1}, "");
+  setTimeout(()=>form.elements.first.focus(), 50);
+}
+function closeForm(fromPop){
+  if (ov.hidden) return;
+  ov.hidden = true; document.body.style.overflow = "";
+  if (!fromPop && history.state && history.state.dlg) history.back();
+  if (lastFocus) lastFocus.focus();
+}
+document.getElementById("dlgBack").onclick = ()=>closeForm();
+document.getElementById("dlgClose").onclick = ()=>closeForm();
+ov.addEventListener("click", e=>{ if (e.target === ov) closeForm(); });
+document.addEventListener("keydown", e=>{ if (e.key === "Escape") closeForm(); });
+window.addEventListener("popstate", ()=>closeForm(true));
+document.getElementById("list").addEventListener("click", e=>{
+  const a = e.target.closest("a.slot"); if (!a) return;
+  e.preventDefault(); openForm(a.dataset.r, a.dataset.t);
+});
+function intlPhone(v){
+  let d = v.replace(/[^\d+]/g, "");
+  if (d.startsWith("+")) return /^\+\d{8,15}$/.test(d) ? d : "";
+  d = d.replace(/\D/g, "");
+  if (d.startsWith("00")) return /^00\d{8,15}$/.test(d) ? "+" + d.slice(2) : "";
+  if (d.startsWith("972")) d = "0" + d.slice(3);
+  return /^0\d{8,9}$/.test(d) ? "+972" + d.slice(1) : "";
+}
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const v = k => form.elements[k].value.trim();
+  const miss = [["first","שם פרטי"],["last","שם משפחה"],["email","מייל"],["phone","טלפון"],["kid","שם הילד/ה"]].filter(([k])=>!v(k));
+  if (miss.length){ errEl.textContent = "חסר: " + miss.map(x=>x[1]).join(", "); form.elements[miss[0][0]].focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v("email"))){ errEl.textContent = "המייל לא נראה תקין. בדקו אותו שוב"; form.elements.email.focus(); return; }
+  const ph = intlPhone(v("phone"));
+  if (!ph){ errEl.textContent = "מספר הטלפון לא נראה תקין (למשל 050-1234567)"; form.elements.phone.focus(); return; }
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({first:v("first"), last:v("last"), email:v("email"), phone:v("phone"), kid:v("kid"), p2:v("p2")})); } catch(e){}
+  const q = new URLSearchParams({first_name:v("first"), last_name:v("last"), email:v("email"), a1:v("kid"), a3:ph});
+  if (v("p2")) q.set("a2", v("p2"));
+  location.href = bookUrl(chosen.r, chosen.iso) + "&" + q.toString();
+});
 
 fetch("slots.json?v=" + Date.now(), {cache:"no-store"})
   .then(r=>r.ok?r.json():Promise.reject(r.status))
