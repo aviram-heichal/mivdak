@@ -179,8 +179,18 @@ function minDate(){ const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA'
 const DAYS_SHOWN = 8;
 let DATA = FALLBACK, filter = new URLSearchParams(location.search).get("r") || "all", showAll = false;
 
-document.getElementById("back").onclick = () => {
-  if (history.length > 1) history.back(); else location.href = "https://heichal.ravpage.co.il/Stusy-Coaching";
+// חזרה: רק אם הגיעו מדף רגיל באתר שלנו. אחרי תשלום (קארדקום) או מקישור בווטסאפ/מייל = סגירת הלשונית
+const REF = document.referrer || "";
+const CAN_BACK = history.length > 1 && REF && !/cardcom|secure\.|payment|calendly/i.test(REF);
+const backBtn = document.getElementById("back");
+if (!CAN_BACK) backBtn.textContent = "✕ סגירה";
+backBtn.onclick = () => {
+  if (CAN_BACK) { history.back(); return; }
+  window.close();
+  setTimeout(() => { // הדפדפן לא תמיד מרשה לסגור לשונית -> הסבר קצר
+    if (document.getElementById("closeNote")) return;
+    backBtn.insertAdjacentHTML("afterend", `<span id="closeNote" style="color:#fff;font-size:15px;margin-inline-start:10px">אפשר פשוט לסגור את הלשונית 🙂</span>`);
+  }, 300);
 };
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
