@@ -124,7 +124,8 @@ const FALLBACK = {
   ], slots: []
 };
 const DAYS = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
-const MIN_MS = 12*3600*1000;
+const MIN_DAYS = 2; // מועד מוקדם ביותר: יומיים מהיום (זמן למלא שאלונים)
+function minDate(){ const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jerusalem',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value])); const d = new Date(Date.UTC(+p.year, +p.month-1, +p.day + MIN_DAYS)); return d.toISOString().slice(0,10); }
 const DAYS_SHOWN = 8;
 let DATA = FALLBACK, filter = new URLSearchParams(location.search).get("r") || "all", showAll = false;
 
@@ -159,7 +160,8 @@ function render(){
   renderChips();
   const list = document.getElementById("list");
   const now = Date.now();
-  const slots = DATA.slots.filter(s => (filter==="all" || s.r===filter) && reg(s.r) && (new Date(s.t).getTime()-now) >= MIN_MS);
+  const md = minDate();
+  const slots = DATA.slots.filter(s => (filter==="all" || s.r===filter) && reg(s.r) && s.t.slice(0,10) >= md);
   if (!slots.length){
     const people = DATA.registrars.filter(r=>filter==="all"||r.id===filter);
     list.innerHTML = `<div class="empty">${DATA.slots.length? "אין כרגע מועד פנוי אצל מי שבחרתם. אפשר לבחור מישהו אחר מהצוות, או להיכנס ישירות ליומן:" : "פתחו את היומן של מי שתרצו ובחרו מועד:"}</div>

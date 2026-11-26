@@ -14,7 +14,8 @@ REGISTRARS = [
      "uuid": "cac8ca26-6d92-43e6-8abd-333d28731803"},
 ]
 DAYS_AHEAD = 70
-MIN_HOURS_AHEAD = 12          # don't offer a meeting that starts in less than 12 hours
+MIN_HOURS_AHEAD = 12          # safety net
+MIN_DAYS_AHEAD = 2            # Aviram 26.11: earliest meeting = 2 calendar days from today (time for questionnaires, no same/next-day surprises for coaches)
 
 IL = datetime.timezone(datetime.timedelta(hours=2))
 now = datetime.datetime.now(datetime.timezone.utc)
@@ -45,6 +46,8 @@ for reg in REGISTRARS:
                     t = datetime.datetime.fromisoformat(s["start_time"])
                     if (t - now).total_seconds() < MIN_HOURS_AHEAD * 3600:
                         continue
+                    if t.astimezone(IL).date() < start + datetime.timedelta(days=MIN_DAYS_AHEAD):
+                        continue
                     slots.append({"r": reg["id"], "t": s["start_time"]})
             a = b + datetime.timedelta(days=1)
     except Exception as e:
@@ -72,7 +75,7 @@ except Exception:
 if errors and old:
     failed = {e.split(":")[0] for e in errors}
     keep = [s for s in old.get("slots", []) if s["r"] in failed and
-            (datetime.datetime.fromisoformat(s["t"]) - now).total_seconds() >= MIN_HOURS_AHEAD * 3600]
+            datetime.datetime.fromisoformat(s["t"]).astimezone(IL).date() >= start + datetime.timedelta(days=MIN_DAYS_AHEAD)]
     out["slots"] = sorted(out["slots"] + keep, key=lambda x: (x["t"], x["r"]))
 
 if old and old.get("slots") == out["slots"] and old.get("errors") == out["errors"] \
