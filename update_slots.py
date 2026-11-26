@@ -14,6 +14,8 @@ REGISTRARS = [
      "uuid": "cac8ca26-6d92-43e6-8abd-333d28731803"},
 ]
 DAYS_AHEAD = 70
+# מועדים שחסומים ידנית (פגישה שלא מופיעה ביומן שקלנדלי בודק). "רשם": ["YYYY-MM-DD" או "YYYY-MM-DDTHH:MM"]
+BLOCKED = {"aviram": ["2026-11-29"]}  # 26.11: לאבירם יש פגישה בבוקר 29.11
 MIN_HOURS_AHEAD = 12          # safety net
 MIN_DAYS_AHEAD = 2            # Aviram 26.11: earliest meeting = 2 calendar days from today (time for questionnaires, no same/next-day surprises for coaches)
 
@@ -47,6 +49,8 @@ for reg in REGISTRARS:
                     if (t - now).total_seconds() < MIN_HOURS_AHEAD * 3600:
                         continue
                     if t.astimezone(IL).date() < start + datetime.timedelta(days=MIN_DAYS_AHEAD):
+                        continue
+                    if any(s["start_time"].startswith(b) for b in BLOCKED.get(reg["id"], [])):
                         continue
                     slots.append({"r": reg["id"], "t": s["start_time"]})
             a = b + datetime.timedelta(days=1)
