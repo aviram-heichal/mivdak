@@ -38,8 +38,8 @@
   .slot:hover,.slot:focus{border-color:var(--gold);box-shadow:0 4px 14px rgba(212,167,60,.25);transform:translateY(-1px)}
   .slot img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--gold2)}
   .slot .t{font-size:24px;font-weight:800;color:var(--navy);line-height:1.1}
-  .slot .n{font-size:16px;color:var(--mut)}
-  .slot .go{margin-inline-start:auto;font-size:15px;font-weight:700;color:#fff;background:var(--gold);border-radius:999px;padding:5px 11px;white-space:nowrap}
+  .slot .n{font-size:16px;color:var(--mut);white-space:nowrap}
+  .slot .go{margin-inline-start:auto;font-size:20px;font-weight:800;color:var(--gold)}
   .note{font-size:16px;color:var(--mut);text-align:center;margin-top:24px}
   .empty{text-align:center;padding:24px 8px;color:var(--mut)}
   .people{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
@@ -131,7 +131,7 @@ function render(){
     h += `<section class="day"><h2>${esc(d.label)}</h2><div class="slots">`;
     d.items.sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0).forEach(s=>{
       const r = reg(s.r), p = ilParts(s.t);
-      h += `<a class="slot" href="${esc(bookUrl(r,s.t))}"><img src="${esc(r.img)}" alt=""><span><span class="t">${p.time}</span><br><span class="n">עם ${esc(r.name)}</span></span><span class="go">בחירה</span></a>`;
+      h += `<a class="slot" href="${esc(bookUrl(r,s.t))}"><img src="${esc(r.img)}" alt=""><span><span class="t">${p.time}</span><br><span class="n">עם ${esc(r.name)}</span></span><span class="go">←</span></a>`;
     });
     h += `</div></section>`;
   });
