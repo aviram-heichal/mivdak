@@ -75,6 +75,12 @@
   .last ol{margin:4px 0 8px;padding-inline-start:22px;font-size:16px;line-height:1.55}
   .fake-btn{display:block;width:max-content;margin:0 auto;background:#006bff;color:#fff;font-family:Arial,sans-serif;font-weight:700;font-size:16px;border-radius:999px;padding:9px 22px}
   .last-s{text-align:center;font-size:15px;font-weight:700;color:var(--navy);margin-top:8px}
+  .rules{background:#f3f6fd;border:2px solid #d5def3;border-radius:14px;padding:12px 16px;margin:12px 0 16px}
+  .rules-t{font-weight:800;font-size:19px;color:var(--navy);margin-bottom:6px}
+  .rules ul{list-style:none;margin:0;padding:0;font-size:17px;line-height:1.6}
+  .rules li{margin:3px 0}
+  .remind{background:#f3f6fd;border-radius:12px;padding:8px 12px;font-size:16px;font-weight:500;color:var(--navy);margin:2px 0 6px}
+  .rules b{color:var(--navy)}
   @media (max-width:420px){.row2{grid-template-columns:1fr;gap:0}}
 </style>
 </head>
@@ -88,6 +94,16 @@
   <main class="wrap">
     <div class="card">
       <div class="steps"><span><b>1.</b> בוחרים יום ושעה</span><span>←</span><span><b>2.</b> ממלאים פרטים</span><span>←</span><span><b>3.</b> מאשרים ומקבלים מייל</span></div>
+      <div class="rules">
+        <div class="rules-t">📋 חשוב לדעת לפני שבוחרים מועד</div>
+        <ul>
+          <li>👨‍👩‍👧 מגיעים <b>שני ההורים</b> (לכל הפגישה) <b>והילד/ה</b></li>
+          <li>⏰ הפגישה כ<b>שעתיים</b> (הילד/ה בחלק מהזמן). בבקשה לא להיות מוגבלים בזמן</li>
+          <li>💻 בזום, <b>ממחשב אחד</b> (לא מטלפון ולא מטאבלט)</li>
+          <li>🏠 ההורים והילד/ה <b>באותו חדר</b> (לא מתחברים מהמשרד)</li>
+          <li>🍎 חשוב שהילד/ה יאכל/תאכל היטב לפני הפגישה (ולא מתוקים)</li>
+        </ul>
+      </div>
       <p class="filter-title">עם מי תרצו להיפגש?</p>
       <div class="chips" id="chips"></div>
       <div id="list"><div class="loading">טוען את המועדים הפנויים...</div></div>
@@ -113,6 +129,7 @@
         <label>טלפון נייד<input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="050-0000000" required></label>
         <label>שם הילד/ה<input name="kid" required></label>
         <label>שם ההורה השני <span class="opt">(לא חובה)</span><input name="p2"></label>
+        <p class="remind">👨‍👩‍👧 זכרו: שני ההורים והילד/ה, כשעתיים, בזום ממחשב אחד, באותו חדר</p>
         <p class="err" id="err" aria-live="polite"></p>
         <div class="last">
           <div class="last-t">⚠️ שימו לב: יש עוד שלב אחד אחרון!</div>
