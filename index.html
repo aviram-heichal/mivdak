@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בחירת מועד לפגישת המבדק | אבירם היכל - העוצמה בחינוך</title>
+<meta name="description" content="בוחרים יום ושעה לפגישת המבדק והכנת התוכנית לילד/ה שלכם">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#14254a;--navy2:#1e3566;--gold:#d4a73c;--gold2:#f3e3b5;--bg:#f6f7fb;--ink:#1c2540;--mut:#5b6582;--line:#e3e6ef}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Rubik,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.5}
+  .top{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:18px 18px 34px;text-align:center}
+  .bar{max-width:760px;margin:0 auto;display:flex;justify-content:flex-start}
+  .back{color:#fff;text-decoration:none;font-size:16px;border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:6px 14px;background:none;font-family:inherit;cursor:pointer}
+  .back:hover{background:rgba(255,255,255,.12)}
+  h1{font-size:clamp(28px,6vw,40px);font-weight:800;margin:18px 0 6px;line-height:1.2}
+  h1 span{color:var(--gold)}
+  .sub{margin:0 auto;max-width:560px;color:#dfe5f5;font-size:18px}
+  .wrap{max-width:760px;margin:-20px auto 40px;padding:0 14px}
+  .card{background:#fff;border-radius:18px;box-shadow:0 6px 24px rgba(20,37,74,.08);padding:20px}
+  .steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:16px;color:var(--mut);margin:2px 0 6px}
+  .steps b{color:var(--navy)}
+  .filter-title{font-weight:700;margin:6px 0 10px;text-align:center}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .chip{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px 6px 8px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink)}
+  .chip img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+  .chip.all{padding:6px 16px}
+  .chip[aria-pressed="true"]{border-color:var(--gold);background:#fff8e6;font-weight:700}
+  .day{margin-top:22px}
+  .day h2{font-size:21px;margin:0 0 10px;color:var(--navy);display:flex;align-items:center;gap:10px}
+  .day h2::after{content:"";flex:1;height:2px;background:var(--line)}
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .slot{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;transition:.15s}
+  .slot:hover,.slot:focus{border-color:var(--gold);box-shadow:0 4px 14px rgba(212,167,60,.25);transform:translateY(-1px)}
+  .slot img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--gold2)}
+  .slot .t{font-size:24px;font-weight:800;color:var(--navy);line-height:1.1}
+  .slot .n{font-size:16px;color:var(--mut)}
+  .slot .go{margin-inline-start:auto;font-size:15px;font-weight:700;color:#fff;background:var(--gold);border-radius:999px;padding:5px 11px;white-space:nowrap}
+  .note{font-size:16px;color:var(--mut);text-align:center;margin-top:24px}
+  .empty{text-align:center;padding:24px 8px;color:var(--mut)}
+  .people{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+  .person{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;border:2px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:var(--ink)}
+  .person img{width:84px;height:84px;border-radius:50%;object-fit:cover}
+  .person b{font-size:19px}
+  .person .go{font-size:16px;font-weight:700;color:#fff;background:var(--gold);border-radius:999px;padding:6px 14px}
+  .more{display:block;margin:18px auto 0;font:inherit;font-size:17px;border:2px solid var(--navy);color:var(--navy);background:#fff;border-radius:999px;padding:8px 20px;cursor:pointer}
+  .wa{display:inline-block;margin-top:6px;color:var(--navy);font-weight:700}
+  .loading{text-align:center;padding:30px;color:var(--mut)}
+  footer{text-align:center;font-size:14px;color:var(--mut);padding:0 14px 30px}
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="bar"><button class="back" id="back" type="button">→ חזרה</button></div>
+    <h1>בוחרים מועד<br><span>לפגישת המבדק</span></h1>
+    <p class="sub">הפגישה בזום, כשעתיים, עם שני ההורים והילד/ה.<br>בסופה יש לכם תוכנית מדויקת להצלחה של הילד/ה.</p>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <div class="steps"><span><b>1.</b> בוחרים יום ושעה</span><span>←</span><span><b>2.</b> ממלאים פרטים</span><span>←</span><span><b>3.</b> מקבלים אישור במייל</span></div>
+      <p class="filter-title">עם מי תרצו להיפגש?</p>
+      <div class="chips" id="chips"></div>
+      <div id="list"><div class="loading">טוען את המועדים הפנויים...</div></div>
+      <p class="note">לא מצאתם מועד שמתאים?<br><a class="wa" href="https://wa.me/972546715757" target="_blank" rel="noopener">כתבו לנו בווטסאפ ונמצא יחד ←</a></p>
+    </div>
+  </main>
+  <footer>© אבירם היכל - העוצמה בחינוך · כל השעות לפי שעון ישראל</footer>
+
+<script>
+const FALLBACK = {
+  registrars: [
+    {id:"aviram", name:"אבירם היכל", role:"מייסד העוצמה בחינוך", img:"img/aviram.jpg", url:"https://calendly.com/aviram-heichal-power-in-education/30min"},
+    {id:"emanuel", name:"עמנואל חצור", role:"מומחה למבדקי למידה", img:"img/emanuel.jpg", url:"https://calendly.com/bearibear6/meet-with-me"},
+    {id:"orly", name:"אורלי חיון", role:"מומחית למבדקי למידה", img:"img/orly.jpg", url:"https://calendly.com/orliot/30min"}
+  ], slots: []
+};
+const DAYS = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const MIN_MS = 12*3600*1000;
+const DAYS_SHOWN = 8;
+let DATA = FALLBACK, filter = new URLSearchParams(location.search).get("r") || "all", showAll = false;
+
+document.getElementById("back").onclick = () => {
+  if (history.length > 1) history.back(); else location.href = "https://heichal.ravpage.co.il/Stusy-Coaching";
+};
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function reg(id){return DATA.registrars.find(r=>r.id===id)}
+function ilParts(iso){ // the time string already carries Israel offset -> read it as written
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  const d = new Date(Date.UTC(+m[1], +m[2]-1, +m[3]));
+  return {date:`${m[1]}-${m[2]}-${m[3]}`, label:`יום ${DAYS[d.getUTCDay()]} ${+m[3]}.${+m[2]}`, time:`${m[4]}:${m[5]}`, month:`${m[1]}-${m[2]}`};
+}
+function bookUrl(r, iso){
+  const p = ilParts(iso);
+  return `${r.url}/${iso}?month=${p.month}&date=${p.date}`;
+}
+
+function renderChips(){
+  const el = document.getElementById("chips");
+  const counts = {}; DATA.slots.forEach(s=>counts[s.r]=(counts[s.r]||0)+1);
+  let h = `<button class="chip all" type="button" data-r="all" aria-pressed="${filter==="all"}">כל הצוות</button>`;
+  DATA.registrars.forEach(r=>{
+    h += `<button class="chip" type="button" data-r="${esc(r.id)}" aria-pressed="${filter===r.id}"><img src="${esc(r.img)}" alt="">${esc(r.name)}</button>`;
+  });
+  el.innerHTML = h;
+  el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{filter=b.dataset.r; showAll=false; render();});
+}
+
+function render(){
+  renderChips();
+  const list = document.getElementById("list");
+  const now = Date.now();
+  const slots = DATA.slots.filter(s => (filter==="all" || s.r===filter) && reg(s.r) && (new Date(s.t).getTime()-now) >= MIN_MS);
+  if (!slots.length){
+    const people = DATA.registrars.filter(r=>filter==="all"||r.id===filter);
+    list.innerHTML = `<div class="empty">${DATA.slots.length? "אין כרגע מועד פנוי אצל מי שבחרתם. אפשר לבחור מישהו אחר מהצוות, או להיכנס ישירות ליומן:" : "פתחו את היומן של מי שתרצו ובחרו מועד:"}</div>
+      <div class="people">${people.map(r=>`<a class="person" href="${esc(r.url)}"><img src="${esc(r.img)}" alt=""><b>${esc(r.name)}</b><span>${esc(r.role)}</span><span class="go">לבחירת מועד ←</span></a>`).join("")}</div>`;
+    return;
+  }
+  const byDay = new Map();
+  slots.forEach(s=>{const p=ilParts(s.t); if(!byDay.has(p.date)) byDay.set(p.date,{label:p.label,items:[]}); byDay.get(p.date).items.push(s);});
+  const days = [...byDay.values()];
+  const shown = showAll ? days : days.slice(0, DAYS_SHOWN);
+  let h = "";
+  shown.forEach(d=>{
+    h += `<section class="day"><h2>${esc(d.label)}</h2><div class="slots">`;
+    d.items.sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0).forEach(s=>{
+      const r = reg(s.r), p = ilParts(s.t);
+      h += `<a class="slot" href="${esc(bookUrl(r,s.t))}"><img src="${esc(r.img)}" alt=""><span><span class="t">${p.time}</span><br><span class="n">עם ${esc(r.name)}</span></span><span class="go">בחירה</span></a>`;
+    });
+    h += `</div></section>`;
+  });
+  if (!showAll && days.length > DAYS_SHOWN) h += `<button class="more" type="button" id="more">עוד תאריכים ↓</button>`;
+  list.innerHTML = h;
+  const m = document.getElementById("more"); if (m) m.onclick = ()=>{showAll=true; render();};
+}
+
+fetch("slots.json?v=" + Date.now(), {cache:"no-store"})
+  .then(r=>r.ok?r.json():Promise.reject(r.status))
+  .then(j=>{ if (j && j.registrars && j.slots) DATA = j; render(); })
+  .catch(()=>render());
+</script>
+</body>
+</html>
