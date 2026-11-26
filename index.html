@@ -79,6 +79,11 @@
   .rules-t{font-weight:800;font-size:19px;color:var(--navy);margin-bottom:6px}
   .rules ul{list-style:none;margin:0;padding:0;font-size:17px;line-height:1.6}
   .rules li{margin:3px 0}
+  .done-ic{font-size:54px;text-align:center;line-height:1}
+  .done-t{text-align:center;font-size:28px!important;margin:6px 0 10px!important}
+  .done-p{text-align:center;font-size:17px;margin:10px 0}
+  .done-p a{color:var(--navy);font-weight:700}
+  .cta[disabled]{opacity:.7;cursor:wait}
   .remind{background:#f3f6fd;border-radius:12px;padding:8px 12px;font-size:16px;font-weight:500;color:var(--navy);margin:2px 0 6px}
   .rules b{color:var(--navy)}
   @media (max-width:420px){.row2{grid-template-columns:1fr;gap:0}}
@@ -131,7 +136,7 @@
         <label>שם ההורה השני <span class="opt">(לא חובה)</span><input name="p2"></label>
         <p class="remind">👨‍👩‍👧 זכרו: שני ההורים והילד/ה, כשעתיים, בזום ממחשב אחד, באותו חדר</p>
         <p class="err" id="err" aria-live="polite"></p>
-        <div class="last">
+        <div class="last" id="lastBox">
           <div class="last-t">⚠️ שימו לב: יש עוד שלב אחד אחרון!</div>
           <ol>
             <li>אחרי הלחיצה תעברו לדף <b>מערכת התורים</b> שלנו (הוא באנגלית).</li>
@@ -141,8 +146,22 @@
           <div class="fake-btn" dir="ltr">Schedule Event</div>
           <div class="last-s">רק אחרי הלחיצה עליו הפגישה נקבעת, ותקבלו אישור במייל ✅</div>
         </div>
-        <button class="cta" type="submit">המשך לאישור הפגישה ←</button>
+        <button class="cta" type="submit" id="cta">המשך לאישור הפגישה ←</button>
       </form>
+      <div id="done" hidden>
+        <div class="done-ic">✅</div>
+        <h2 class="done-t">הפגישה נקבעה!</h2>
+        <div class="pick" id="donePick"></div>
+        <p class="done-p">שלחנו אליכם מייל אישור עם <b>הקישור לזום</b>.<br>לא רואים אותו? בדקו גם בתיקיית קידומי מכירות / ספאם.</p>
+        <div class="rules"><div class="rules-t">📋 להזכירכם</div><ul>
+          <li>👨‍👩‍👧 שני ההורים (לכל הפגישה) והילד/ה</li>
+          <li>⏰ כשעתיים, בלי להיות מוגבלים בזמן</li>
+          <li>💻 בזום ממחשב אחד, כולם באותו חדר</li>
+          <li>🍎 הילד/ה אוכל/ת היטב לפני (ולא מתוקים)</li>
+        </ul></div>
+        <p class="done-p">צריך לשנות מועד? <a id="resched" href="#" target="_blank" rel="noopener">לשינוי מועד</a> · <a id="cancelL" href="#" target="_blank" rel="noopener">לביטול</a></p>
+        <button class="cta" type="button" id="doneClose">סגירה</button>
+      </div>
     </div>
   </div>
 
@@ -221,6 +240,14 @@ function render(){
 const ov = document.getElementById("ov"), form = document.getElementById("f"), errEl = document.getElementById("err");
 let chosen = null, lastFocus = null;
 const SAVE_KEY = "mivdak-form";
+const cta = document.getElementById("cta");
+// קביעה ישירה דרך השרת הקטן בגוגל (המפתח של קלנדלי שמור רק שם). ריק = הדרך הרגילה דרך קלנדלי
+const BOOK_API = "";
+let DIRECT = false;
+if (BOOK_API && !new URLSearchParams(location.search).has("classic")) {
+  fetch(BOOK_API, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ping:1})})
+    .then(r=>r.json()).then(j=>{ if (j.ready) { DIRECT = true; if (!ov.hidden) { document.getElementById("lastBox").hidden = true; resetCta(); } } }).catch(()=>{});
+}
 function openForm(rid, iso){
   const r = reg(rid); if (!r) return;
   chosen = {r, iso};
@@ -228,6 +255,9 @@ function openForm(rid, iso){
   document.getElementById("pick").innerHTML = `<img src="${esc(r.img)}" alt=""><span><b>${esc(p.label)} · ${p.time}</b><br>פגישת מבדק עם ${esc(r.name)}</span>`;
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}"); for (const k in s) if (form.elements[k] && !form.elements[k].value) form.elements[k].value = s[k]; } catch(e){}
   errEl.textContent = "";
+  form.hidden = false; document.getElementById("done").hidden = true;
+  document.getElementById("dlgTitle").hidden = false; document.getElementById("pick").hidden = false;
+  document.getElementById("lastBox").hidden = DIRECT; resetCta();
   lastFocus = document.activeElement;
   ov.hidden = false; document.body.style.overflow = "hidden";
   history.pushState({dlg:1}, "");
@@ -267,8 +297,50 @@ form.addEventListener("submit", e=>{
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({first:v("first"), last:v("last"), email:v("email"), phone:v("phone"), kid:v("kid"), p2:v("p2")})); } catch(e){}
   const q = new URLSearchParams({first_name:v("first"), last_name:v("last"), email:v("email"), a1:v("kid"), a3:ph});
   if (v("p2")) q.set("a2", v("p2"));
-  location.href = bookUrl(chosen.r, chosen.iso) + "&" + q.toString();
+  const calendlyUrl = bookUrl(chosen.r, chosen.iso) + "&" + q.toString();
+  if (!DIRECT){ location.href = calendlyUrl; return; }
+  // קביעה ישירה, בלי לצאת מהדף
+  cta.disabled = true; cta.textContent = "קובעים את הפגישה... ⏳"; errEl.textContent = "";
+  const ctrl = new AbortController(); const tm = setTimeout(()=>ctrl.abort(), 25000);
+  fetch(BOOK_API, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, signal:ctrl.signal,
+    body: JSON.stringify({r:chosen.r.id, t:chosen.iso, first:v("first"), last:v("last"), email:v("email"), phone:ph, kid:v("kid"), p2:v("p2")})})
+    .then(r=>r.json())
+    .then(j=>{
+      clearTimeout(tm);
+      if (j.ok){ showDone(j); return; }
+      if (j.err === "taken"){
+        resetCta(); closeForm();
+        DATA.slots = DATA.slots.filter(s=>!(s.r===chosen.r.id && s.t===chosen.iso)); render();
+        alertTop("אוי, המועד הזה נתפס ממש עכשיו 🙈 בחרו בבקשה מועד אחר.");
+        return;
+      }
+      fallback(calendlyUrl);
+    })
+    .catch(()=>{ clearTimeout(tm); fallback(calendlyUrl); });
 });
+function resetCta(){ cta.disabled = false; cta.textContent = DIRECT ? "קביעת הפגישה ←" : "המשך לאישור הפגישה ←"; }
+function fallback(url){ // משהו לא עבד -> חוזרים לדרך הרגילה של קלנדלי, עם ההסבר
+  DIRECT = false;
+  document.getElementById("lastBox").hidden = false; resetCta();
+  errEl.textContent = "עוד שלב אחד קצר, וזה מסודר 👇";
+  document.getElementById("lastBox").scrollIntoView({block:"center", behavior:"smooth"});
+}
+function showDone(j){
+  form.hidden = true; document.getElementById("dlgTitle").hidden = true; document.getElementById("pick").hidden = true;
+  const p = ilParts(chosen.iso);
+  document.getElementById("donePick").innerHTML = `<img src="${esc(chosen.r.img)}" alt=""><span><b>${esc(p.label)} · ${p.time}</b><br>פגישת מבדק עם ${esc(chosen.r.name)}</span>`;
+  const rs = document.getElementById("resched"), cl = document.getElementById("cancelL");
+  if (j.reschedule_url) rs.href = j.reschedule_url; else rs.parentNode.hidden = true;
+  if (j.cancel_url) cl.href = j.cancel_url;
+  document.getElementById("done").hidden = false;
+  DATA.slots = DATA.slots.filter(s=>!(s.r===chosen.r.id && s.t===chosen.iso)); render();
+}
+function alertTop(msg){
+  const el = document.getElementById("list");
+  el.insertAdjacentHTML("afterbegin", `<p class="err" style="text-align:center;font-size:19px">${esc(msg)}</p>`);
+  el.scrollIntoView({block:"start", behavior:"smooth"});
+}
+document.getElementById("doneClose").onclick = ()=>closeForm();
 
 fetch("slots.json?v=" + Date.now(), {cache:"no-store"})
   .then(r=>r.ok?r.json():Promise.reject(r.status))
