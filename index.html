@@ -70,6 +70,11 @@
   .cta{display:block;width:100%;font:inherit;font-size:21px;font-weight:800;color:#fff;background:var(--gold);border:0;border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 6px 18px rgba(212,167,60,.35)}
   .cta:hover{filter:brightness(1.05)}
   .hint{font-size:15px;color:var(--mut);text-align:center;margin:12px 0 0}
+  .last{background:#fff8e6;border:2px solid var(--gold);border-radius:14px;padding:12px 14px;margin:6px 0 14px}
+  .last-t{font-weight:800;font-size:18px;color:#8a5a00;margin-bottom:4px}
+  .last ol{margin:4px 0 8px;padding-inline-start:22px;font-size:16px;line-height:1.55}
+  .fake-btn{display:block;width:max-content;margin:0 auto;background:#006bff;color:#fff;font-family:Arial,sans-serif;font-weight:700;font-size:16px;border-radius:999px;padding:9px 22px}
+  .last-s{text-align:center;font-size:15px;font-weight:700;color:var(--navy);margin-top:8px}
   @media (max-width:420px){.row2{grid-template-columns:1fr;gap:0}}
 </style>
 </head>
@@ -109,8 +114,17 @@
         <label>שם הילד/ה<input name="kid" required></label>
         <label>שם ההורה השני <span class="opt">(לא חובה)</span><input name="p2"></label>
         <p class="err" id="err" aria-live="polite"></p>
-        <button class="cta" type="submit">שמירת הפגישה ←</button>
-        <p class="hint">במסך הבא כל הפרטים כבר ממולאים.<br>נשאר רק ללחוץ למטה על הכפתור הכחול <b dir="ltr">Schedule Event</b> (= אישור הפגישה).</p>
+        <div class="last">
+          <div class="last-t">⚠️ שימו לב: יש עוד שלב אחד אחרון!</div>
+          <ol>
+            <li>אחרי הלחיצה תעברו לדף <b>מערכת התורים</b> שלנו (הוא באנגלית).</li>
+            <li>כל הפרטים שלכם כבר יהיו ממולאים שם, לא צריך לכתוב כלום.</li>
+            <li>גוללים למטה ולוחצים על הכפתור הכחול:</li>
+          </ol>
+          <div class="fake-btn" dir="ltr">Schedule Event</div>
+          <div class="last-s">רק אחרי הלחיצה עליו הפגישה נקבעת, ותקבלו אישור במייל ✅</div>
+        </div>
+        <button class="cta" type="submit">המשך לאישור הפגישה ←</button>
       </form>
     </div>
   </div>
